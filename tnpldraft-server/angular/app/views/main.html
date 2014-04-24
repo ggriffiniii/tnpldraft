@@ -1,0 +1,33 @@
+<div class="row">
+	<div class="col-md-3">
+		<roster-list></roster-list>
+	</div>
+	<div class="col-md-5">
+		<div class="panel panel-primary">
+				<div class="panel-heading">{{ stateSummary() }}</div>
+				<div class="panel-body" ng-switch on="state">
+					<div ng-switch-when="CONNECTED">
+						<waiting-for-teams></waiting-for-teams>
+					</div>
+					<div ng-switch-when="OFFER_PICK">
+						<pick-player error="player_error" on-submit="pickPlayer(player, bid)"></pick-player>
+					</div>
+					<div ng-switch-when="WAITING_FOR_PICK">
+						<wait-for-pick team="pickingTeam"></wait-for-pick>
+					</div>
+					<div ng-switch-when="AUCTION_IN_PROGRESS">
+						<bid-on-player auction="auction" on-submit="bidOnPlayer(player, bid)"></bid-on-player>
+					</div>
+				</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<draft-history></draft-history>
+	</div>
+</div>
+
+<div class="row">
+	<div class="footer">
+		<p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+	</div>
+</div>

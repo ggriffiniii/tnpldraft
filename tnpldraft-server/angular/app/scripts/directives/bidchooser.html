@@ -1,0 +1,22 @@
+<style>
+  .slide-left {
+		transition: left 0.5s;
+	}
+</style>
+<div style="overflow: hidden;">
+	<div
+			class="slide-left"
+			ng-style="{'left': '' + offset + 'px',
+								 'position': 'relative',
+								 'white-space': 'nowrap'}">
+		<button
+				class="btn btn-sm"
+				ng-repeat="bid in allBids"
+				style="width: 67px; margin: 2px;"
+				ng-class="{'btn-primary': selected === bid,
+									 'btn-default': selected !== bid}"
+				ng-click="select(bid)">
+			{{ bid | dollars }}
+		</button>
+	</div>
+</div>

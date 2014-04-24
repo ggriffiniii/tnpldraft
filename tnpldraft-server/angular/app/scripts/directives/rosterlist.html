@@ -1,0 +1,66 @@
+<style type="text/css">
+	.pos-ctn {
+		margin-bottom: 20px;
+	}
+	.pos-btn {
+		min-width: 30px;
+		margin-right: 5px;
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+</style>
+<div class="pos-ctn">
+	<select style="width: auto; display: inline-block;"
+			class="form-control"
+			ng-model="team"
+			ng-options="team.name for team in teams">
+	</select>
+	<span class="pull-right"
+			ng-hide="team !== currentTeam">My Team</span>
+	<a class="pull-right"
+			ng-click="team = currentTeam"
+			ng-hide="team === currentTeam">
+		back to my team</a>
+</div>
+<div>
+	<span class="h5"><strong>Players Needed</strong></span>
+	<span class="pull-right">
+		{{ team.requiredNumPlayers() - team.numPlayers()  }}
+	</span>
+</div>
+<div>
+	<span class="h5"><strong>Salary Remaining</strong></span>
+	<span class="pull-right">{{ team.remainingSalary() | dollars }}</span>
+</div>
+<div>
+	<span class="h5"><strong>Avg Salary Remaining</strong></span>
+	<span class="pull-right">
+		{{ team.remainingSalary() / (team.requiredNumPlayers() - team.numPlayers()) | dollars }}
+	</span>
+</div>
+
+<div class="pos-ctn">
+	<h5><strong>Draftable Positions</strong></h5>
+	<div>
+			<button class="pos-btn btn btn-xs"
+					ng-repeat="pos in team.draftablePositions"
+					ng-click="onPosClick(pos)"
+					ng-class="{'btn-primary': selectedPosition === pos,
+										 'btn-default': selectedPosition !== pos}">
+				{{ pos }}
+			</button>
+	</div>
+</div>
+
+<table class="table table-condensed">
+	<tr>
+		<th>Pos</th>
+		<th>Name</th>
+		<th>Salary</th>
+	</tr>
+	<tr ng-repeat="rosterSpot in team.getRoster(selectedPosition)">
+		<td>{{ rosterSpot.pos }}</td>
+		<td>{{ rosterSpot.player.fullname }}</td>
+		<td>{{ rosterSpot.player.salary | dollars }}</td>
+	</tr>
+</table>

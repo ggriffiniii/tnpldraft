@@ -1,0 +1,14 @@
+<table class="table table-condensed">
+	<tr>
+		<th>#</th>
+		<th>Player</th>
+		<th>Team</th>
+		<th>Salary</th>
+	</tr>
+	<tr ng-repeat="pick in picks">
+		<td>{{ $index }}</td>
+		<td>{{ pick.player.fullname }}</td>
+		<td>{{ pick.winning_team.name }}</td>
+		<td>{{ pick.player.salary | dollars }}</td>
+	</tr>
+</table>

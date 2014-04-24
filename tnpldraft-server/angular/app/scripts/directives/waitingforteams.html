@@ -1,0 +1,11 @@
+<div>
+	Waiting for owners of the following teams to connect
+</div>
+<div class="panel-body">
+	<ul class="list-group">
+		<li class="list-group-item" ng-repeat="team in teams track by team.id">
+			<span>{{ team.name }}</span>
+			<span class="pull-right" ng-class="{'text-success': team.connected, 'text-danger': !team.connected}">{{ team.connected ? "Connected" : "Not Connected" }}</span>
+		</li>
+	</ul>
+</div>

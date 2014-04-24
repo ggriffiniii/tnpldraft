@@ -1,0 +1,58 @@
+<style type="text/css">
+	.space-below {
+		margin-bottom: 20px;
+	}
+</style>
+<div>
+	<div class="space-below">
+		<form name="bidform">
+			<div ng-class="{'form-group': true, 'has-error': selection.invalid}">
+				<input
+						type="text"
+						ng-model="searchTerm"
+						placeholder="Player name..."
+						typeahead="player.fullname for player in getPlayers($viewValue)"
+						typeahead-loading="loading"
+						typeahead-on-select="onSelect($item)"
+						class="form-control">
+				<i ng-show="loading" class="glyphicon glyphicon-refresh"></i>
+				<div class="help-block" ng-show="selection.error.hasRoomFor">
+					{{ selection.player.fullname }} plays {{ selection.player.positions.join(", ") }}. You must draft one of {{ team.draftablePositions.join(", ") }}.
+				</div>
+				<div class="help-block" ng-show="selection.error.freeAgent">
+					{{ selection.player.fullname }} is already on {{ selection.player.team().name }}.
+				</div>
+			</div>
+		</div>
+
+		<div ng-hide="selection.player === undefined || selection.invalid">
+			<table class="table table-condensed">
+				<tr>
+					<th>Name</th>
+					<td>{{ selection.player.fullname }}</td>
+				</tr>
+				<tr>
+					<th>Team</th>
+					<td>{{ selection.player.mlbteam }}</td>
+				</tr>
+				<tr>
+					<th>Positions</th>
+					<td>{{ selection.player.positions.join(", ") }}</td>
+				</tr>
+				<tr>
+					<th>Opening Bid</th>
+					<td>
+						<div ng-class="{'from-group': true, 'has-error': bidform.$invalid}">
+							<salary-input ng-model="selection.bid" name="bidInput"></salary-input>
+							<div class="help-block" ng-show="bidform.$error.nan">Needs to be a number</div>
+							<div class="help-block" ng-show="bidform.$error.multiple">Needs to be a multiple of $0.50</div>
+							<div class="help-block" ng-show="bidform.$error.tooLow">Needs to exceed $0.50</div>
+							<div class="help-block" ng-show="bidform.$error.aboveMax">Exceeds your maximum bid of {{ team.maxBid() | dollars }}</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+			<button class="btn btn-primary" ng-hide="bidform.$invalid" ng-disabled="bidform.$invalid || submitted" ng-click="onClick()">{{ buttonText() }}</button>
+		</form>
+	</div>
+</div>

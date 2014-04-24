@@ -1,0 +1,45 @@
+<div>
+	<table class="table table-condensed">
+		<tr>
+			<th>Name</th>
+			<td>{{ auction.player.fullname }}</td>
+		</tr>
+		<tr>
+			<th>Team</th>
+			<td>{{ auction.player.mlbteam }}</td>
+		</tr>
+		<tr>
+			<th>Positions</th>
+			<td>{{ auction.player.positions.join(", ") }}</td>
+		</tr>
+		<tr>
+			<th>High Bidder</th>
+			<td>{{ auction.team.name }}</td>
+		</tr>
+		<tr>
+			<th>Current Bid</th>
+			<td>{{ auction.bid | dollars }}</td>
+		<tr>
+		<tr>
+			<th>Time Left</th>
+			<td>{{ secsLeft }}</td>
+		</tr>
+	</table>
+
+	<div ng-hide="auction.canBid">
+		<div class="text-danger" ng-show="auction.error.hasRoomFor">
+			You can't bid on this player because you don't have room on your roster.
+		</div>
+		<div class="text-danger" ng-show="auction.error.hasRoomFor">
+			{{ auction.player.fullname }} plays {{ auction.player.positions.join(", ") }}. You must draft one of {{ team.draftablePositions.join(", ") }}.
+		</div>
+		<div class="text-danger" ng-show="auction.error.maxBid">
+			You can't bid on this player because the current bid has exceeded your max bid of {{ team.maxBid() }}.
+		</div>
+	</div>
+	<form name="bidform" ng-show="auction.canBid">
+		<salary-input ng-model="selectedBid" name="bidInput"></salary-input>
+		<bid-chooser min-bid="minBid" selected="selectedBid" max-bid="team.maxBid()"></bid-chooser>
+		<button class="btn btn-primary" ng-hide="bidform.$invalid" ng-disabled="bidform.$invalid" ng-click="onClick()">Bid {{ selectedBid | dollars }}</button>
+	</form>
+</div>
