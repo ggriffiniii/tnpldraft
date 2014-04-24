@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/ggriffiniii/go/gmailid"
-	"github.com/ggriffiniii/go/tnpldraft"
+	"github.com/ggriffiniii/googleauth"
+	"github.com/ggriffiniii/tnpldraft"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"log"
@@ -19,6 +19,7 @@ import _ "github.com/go-sql-driver/mysql"
 var clientId = flag.String("clientid", "973698106370-dmmi34cti20d3j66v6oe09l9tc0oqp3q.apps.googleusercontent.com", "The ouath client id")
 var clientSecret = flag.String("clientsecret", "0amrPk5urZCSA5IVS0SYG_7q", "The oauth client secret")
 var cookieName = flag.String("cookiename", "user", "The cookie name to use")
+var oauthURL = flag.String("oauthURL", "http://psh.randomhost.net:8082/oauthcallback", "The oauth landing page to use")
 var port = flag.Int("port", 8082, "The port to listen on")
 var static_dir = flag.String("static", "", "The static dir")
 var db = flag.String("db", "newtnpldraft", "The database name to use")
@@ -27,24 +28,20 @@ var dbpass = flag.String("dbpass", "tnpldraft", "The database password to use")
 
 func main() {
 	flag.Parse()
-	gmail := gmailid.Manager{
-		ClientId:     *clientId,
-		ClientSecret: *clientSecret,
-		CookieName:   *cookieName,
-	}
+	auth := googleauth.New(*clientId, *clientSecret, *cookieName, *oauthURL)
 	db, err := sql.Open("mysql", fmt.Sprintf("%v:%v@/%v", *dbuser, *dbpass, *db))
 	if err != nil {
 		log.Fatal(err)
 	}
 	draftSupervisor := tnpldraft.NewSupervisor()
 	r := mux.NewRouter()
-	gmail.RegisterCallback(r, "/oauthcallback")
-	r.Handle("/testauth", gmail.ProtectedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		profile, _ := gmail.GetProfile(r)
+	r.Handle("/oauthcallback", auth.OauthHandler())
+	r.Handle("/testauth", auth.ProtectedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		profile, _ := auth.GetProfile(r)
 		w.Write([]byte(profile.Email))
 	})))
-	r.Handle("/ws/{draftId}", gmail.ProtectedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		profile, err := gmail.GetProfile(r)
+	r.Handle("/ws/{draftId}", auth.ProtectedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		profile, err := auth.GetProfile(r)
 		if err != nil {
 			http.Error(w, "Not authenticated", http.StatusUnauthorized)
 		}
@@ -71,7 +68,7 @@ func main() {
 			return
 		}
 	})))
-	r.Handle("/api/draft/{draftId}/playerfilter", gmail.ProtectedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Handle("/api/draft/{draftId}/playerfilter", auth.ProtectedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//		draftId, err := strconv.ParseInt(mux.Vars(r)["draftId"], 10, 64)
 		//		if err != nil {
 		//			http.Error(w, "draftid needs to be a number", 400)
@@ -84,7 +81,7 @@ func main() {
 			return
 		}
 	})))
-	r.Handle("/{unused:.*}", gmail.ProtectedHandler(http.FileServer(http.Dir(*static_dir))))
+	r.Handle("/{unused:.*}", auth.ProtectedHandler(http.FileServer(http.Dir(*static_dir))))
 	log.Println("Listening on ", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), r))
 }

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ggriffiniii/go/gmailid"
+	"github.com/ggriffiniii/googleauth"
 	"github.com/gorilla/websocket"
 	"log"
 	"sync"
@@ -15,7 +15,7 @@ import (
 // ConnectionId represents a unique connection to the draft.
 type Connection struct {
 	Ws   *websocket.Conn
-	User *gmailid.Profile
+	User *googleauth.Profile
 }
 
 func (conn Connection) String() string {
