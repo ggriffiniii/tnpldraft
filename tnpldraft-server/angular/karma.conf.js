@@ -3,6 +3,12 @@
 
 module.exports = function(config) {
   config.set({
+		preprocessors: {
+			'**/*.html': ['ng-html2js']
+		},
+		ngHtml2JsPreprocessor: {
+			stripPrefix: 'app/'
+		},
     // base path, that will be used to resolve files and exclude
     basePath: '',
 
@@ -20,6 +26,7 @@ module.exports = function(config) {
 			'app/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'app/scripts/*.js',
       'app/scripts/**/*.js',
+      'app/scripts/**/*.html',
 			'test/spec/directives/drafthistory.js',
 //      'test/mock/**/*.js',
 //      'test/spec/**/*.js'
@@ -29,7 +36,7 @@ module.exports = function(config) {
     exclude: [],
 
     // web server port
-    port: 8080,
+    port: 8999,
 
     // level of logging
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
@@ -48,8 +55,8 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome', 'PhantomJS'],
-
+    //browsers: ['Chrome', 'PhantomJS'],
+    browsers: ['PhantomJS'],
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
